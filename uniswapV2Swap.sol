@@ -42,6 +42,69 @@ contract UniswapV2SwapExamples {
             path = new address[](3);
             path[0] = DAI;
             path[1] = WETH;
+            path[2]= USDC;
+
+            uint[] memory amounts = router.swapTokensForExactTokens(
+                amountIn,
+                amountOutMin,
+                path,
+                msg.sender,
+                block.timestamp
+            );
+            // amounts[0] = DAI amount
+            // amounts[1] = WETH amount
+            // amounts[2] = USDC amount
+            return amounts[2];
         }
+            //Swap WETH to DAI
+            function swapSingleHopExactAmountOut(uint amountOutDesired, uint amountInMax) external returns (uint amountOut){
+                weth.transferFrom(msg.sender, address(this), amountInMax);
+                weth.approve(address(router), amountInMax);
+
+                address[] mermory path;
+                path = new address[](2);
+                path[0] = WETH;
+                path[1] = DAI;
+
+                uint[] mermory amounts = router.swapTokensForExactTokens(
+                    amountOutDesired,
+                    amountInMax,
+                    path,
+                    msg.sender,
+                    block.timestamp
+                );
+
+                // Refund WETH to msg.sender
+                if  (amounts[0] < amountInMax) {
+                    weth.transfer(msg.sender, amountInMax - amounts[0]);
+                }
+                return amounts[1];
+            }
+
+            // Swap DAI -> WETH -> USDC
+            function swapMultiHopExactAmountOut( uint amountOutDesired, uint amountInMax) external returns (uint amountOut) {
+                dai.transferFrom(msg.sender, address(this), amountInMax);
+
+                address[] memory path;
+                path = new address[](3);
+                path[0] = DAI;
+                path[1] = WETH;
+                path[2] = USDC;
+
+                uint[] memory amounts = router.swapTokensForExactTokens(
+                    amountOutDesired,
+                    amountInMax,
+                    path,
+                    msg.sender,
+                    block.timestamp
+                );
+
+                //Refund DAI to msg.sender
+                if (amounts[0] < amountInMax) {
+                    dai.transfer(msg.sender, amountInMax - amounts[0]);
+                }
+
+                return amounts[2];
+            }
     }
 }
