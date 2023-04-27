@@ -24,10 +24,10 @@ contract TokenDepositWithdrawal {
         balances[msg.sender] += amount;
     }
 
-    function withdraw(uint256 amount) external {
-        IERC20 token = IERC20(tokenAddress);
-        require(balances[msg.sender] >= amount, 'Insufficient balance');
-        require(IERC20(tokenAddress).transfer(msg.sender, amount), 'Transfer failed');
-        balances[msg.sender] -= amount;
-    }
+   function withdraw(uint256 amount) external {
+    require(balances[msg.sender] >= amount, 'Insufficient balance');
+    require(IERC20(tokenAddress).transfer(msg.sender, amount), 'Transfer failed');
+    balances[msg.sender] -= amount;
+}
+
 }
